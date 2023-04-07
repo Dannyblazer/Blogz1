@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-1iymg#b-c^ykt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'Blogz' not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['assured-hub.onrender.com',]
 
 BLOGZ_EXTERNAL_HOSTNAME = os.environ.get('BLOGZ_EXTERNAL_HOSTNAME')
 if BLOGZ_EXTERNAL_HOSTNAME:
