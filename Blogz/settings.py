@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-1iymg#b-c^ykt
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = 'Blogz' not in os.environ
 
-ALLOWED_HOSTS = ['assured-hub.onrender.com',]
+ALLOWED_HOSTS = ['assured-hub.onrender.com', '*']
 
 BLOGZ_EXTERNAL_HOSTNAME = os.environ.get('BLOGZ_EXTERNAL_HOSTNAME')
 if BLOGZ_EXTERNAL_HOSTNAME:
@@ -158,12 +158,12 @@ if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
+    MEDIA_ROOT = str(os.path.join(BASE_DIR, 'media_cdn'))
 
 
 STATICFILES_DIR = [
     os.path.join(BASE_DIR, 'static'),
-    os.path.join(BASE_DIR, 'media'),
+    str(os.path.join(BASE_DIR, 'media')),
 ]
 
 STATIC_URL = 'static/'

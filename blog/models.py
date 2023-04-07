@@ -19,7 +19,7 @@ class BlogPost(models.Model):
     body            = models.TextField(max_length=5000, null=False, blank=False)
     image           = models.ImageField(upload_to=upload_location, null=False, blank=False)
     date_published  = models.DateTimeField(auto_now_add=True, verbose_name="date published")
-    date_updated   = models.DateTimeField(auto_now=True, verbose_name="date updated")
+    date_updated    = models.DateTimeField(auto_now=True, verbose_name="date updated")
     author          = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slug            = models.SlugField(blank=True, unique=True)
     category        = models.CharField(max_length=255, default='coding')
