@@ -36,7 +36,7 @@
 		<!-- Blog Post -->
 		<div class="card m-auto">
 			<a href="{% url 'blog:detail' post.slug %}">
-				<img class="card-img-top" src="{{blog_post.image.url}}">
+				<img class="card-img-top" src="{{blog_post.image.url}}" alt="Blog image Unavailable">
 			</a>
 			
 			<div class="card-body mt-2 mb-2">
@@ -52,7 +52,11 @@
 				
 			</div>
 			<div class="card-footer text-muted">
+<<<<<<< HEAD
 			  Updated {{blog_post.whenpublished}} by <a href="{% url 'users:profile_view' blog_post.author.username %}" >{{blog_post.author.username}}</a>
+=======
+			  Updated {{blog_post.whenpublished}} by <a href="{#% url 'users:profile_view' blog_post.author.username %#}" >{{blog_post.author.username}}</a>
+>>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
 			</div>
 		</div>
 	</div>
