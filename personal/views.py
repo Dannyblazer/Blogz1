@@ -24,7 +24,7 @@ def home_view(request):
     except EmptyPage:
         blog_posts = blog_posts_paginator.page(blog_posts_paginator.num_pages)
 
-    return render(request, 'snippets/home.html', context={"blog_posts":blog_posts, "query":str(query)})
+    return render(request, 'snippets/home.html', context={"blog_posts":blog_posts, "query":str(query), "is_home": True})
 
 # News Search
 
@@ -62,3 +62,6 @@ def news_articles(request):
         blog_posts = blog_posts_paginator.page(blog_posts_paginator.num_pages)
     
     return render(request, 'snippets/news_articles.html', {'blog_posts' : articles})
+
+
+

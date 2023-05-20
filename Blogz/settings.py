@@ -10,10 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 from django.utils import timezone
-
 from pathlib import Path
+import zoneinfo
 import os
-import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,19 +21,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-1iymg#b-c^ykt*j*uez5y@yps#9h^mj1%d%)1*b7-0iciuu+83')
+SECRET_KEY = 'django-insecure-1iymg#b-c^ykt*j*uez5y@yps#9h^mj1%d%)1*b7-0iciuu+83'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = 'Blogz' not in os.environ
+DEBUG = True
 
-ALLOWED_HOSTS = ['assured-hub.onrender.com', '*']
-
-BLOGZ_EXTERNAL_HOSTNAME = os.environ.get('BLOGZ_EXTERNAL_HOSTNAME')
-if BLOGZ_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(BLOGZ_EXTERNAL_HOSTNAME)
+ALLOWED_HOSTS = ["*"]
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # During development only
+
 
 # Application definition
 
@@ -45,6 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'django_htmx',
+
     #'allauth',
 
     #'allauth.account',
@@ -56,12 +55,14 @@ INSTALLED_APPS = [
     'users',
     'blog',
     'personal',
+    'friend',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -74,7 +75,7 @@ ROOT_URLCONF = 'Blogz.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -100,18 +101,31 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.Account'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
+    'users.backends.CaseInsensitiveModelBackend'
+)
 
 WSGI_APPLICATION = 'Blogz.wsgi.application'
-
-ASGI_APPLICATION = 'chat.asgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get("DATABASE_URL"))
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
+
+
+ASGI_APPLICATION = 'Blogz.asgi.application'
+
+
+
+# Connect to your internal Redis instance using the REDIS_URL environment variable
+# The REDIS_URL is set to the internal Redis URL e.g. redis://red-343245ndffg023:6379
 
 
 # Password validation
@@ -138,6 +152,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
+zoneinfo.available_timezones()
+
 TIME_ZONE = 'Africa/Lagos'
 
 USE_I18N = True
@@ -148,6 +164,15 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'media'),
+]
+
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+
+
 if not DEBUG:
     # Tell Django to copy statics to the `staticfiles` directory
     # in your application directory on Render.
@@ -155,21 +180,15 @@ if not DEBUG:
 
     # Turn on WhiteNoise storage backend that takes care of compressing static files
     # and creating unique names for each version so they can safely be cached forever.
-    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 else:
     STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
     MEDIA_ROOT = str(os.path.join(BASE_DIR, 'media_cdn'))
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-STATICFILES_DIR = [
-    os.path.join(BASE_DIR, 'static'),
-    str(os.path.join(BASE_DIR, 'media')),
-]
-
-STATIC_URL = 'static/'
-MEDIA_URL = '/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')

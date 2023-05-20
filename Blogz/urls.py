@@ -14,19 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path, include, re_path
+from django.urls import path, include
 from django.conf import settings
-from django.views.static import serve
 from django.contrib.auth import views as auth_views
-from personal.views import home_view, news_articles
 from django.conf.urls.static import static
-
+from personal.views import home_view
 urlpatterns = [
     path('', home_view, name='home'),
-    path('news/', news_articles, name='news_articles'),
     path('admin/', admin.site.urls),
     path('account/', include('users.urls')),
     path('blog/', include('blog.urls')),
+    path("friend/", include('friend.urls')),
+    path('news/', include('personal.urls')),
 
     # REST FRAMEWORK URLS
     path('api/blog/', include('blog.api.urls', 'blog_api')),
@@ -46,5 +45,6 @@ urlpatterns = [
      name='password_reset_complete'),
 ]
 
-urlpatterns += static(settings.STATIC_URL)
-urlpatterns += static(settings.MEDIA_URL)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

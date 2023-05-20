@@ -100,7 +100,7 @@
                  {% endif %}
  
                  <!-- Submit btn -->
-                 <button class="submit-button btn btn-lg btn-primary btn-block" type="submit">Update</button>
+                 <button class="submit-button btn btn-lg btn-primary btn-block" id="submission" type="submit">Update</button>
              </form>	
          </div>
      </div>
@@ -119,6 +119,9 @@
                  .attr('src', e.target.result)
          };
          reader.readAsDataURL(input.files[0]);
+     }
+     document.getElementById('submission').onclick = function(event){
+        location.reload()
      }
  </script>
 
