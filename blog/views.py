@@ -1,19 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from users.models import Account
 from django.contrib.auth.decorators import login_required
+from users.models import Account
 from blog.forms import CreateBlogPostForm, UpdateBlogPostForm, CommentForm
 from blog.models import BlogPost, Comment
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse
+from django.http import HttpResponse
 from django.db.models import Q
-import requests
 # Create your views here.
 
 
 def create_blog_view(request):
-
 	context = {}
-
 	user = request.user
 	if not user.is_authenticated:
 		return redirect('users:must_authenticate')
@@ -31,14 +27,17 @@ def create_blog_view(request):
 
 	return render(request, 'blog/create.html', context)
 
+
 def detail_blog_view(request, slug):
 
 	context = {}
 	blog_post = get_object_or_404(BlogPost, slug=slug)
 	blog_comments = blog_post.comment.all()
 	context['blog_post'] = blog_post
+	context['blog_id'] = blog_post.id
 	context['blog_comments'] = blog_comments
 	return render(request, 'blog/detail_blog.html', context)
+
 
 def edit_blog_view(request, slug):
 
@@ -69,8 +68,8 @@ def get_blog_queryset(query=None):
 	queries = query.split(" ")
 	for q in queries:
 		posts = BlogPost.objects.filter(
-			Q(title__contains=q)|
-			Q(body__icontains=q)
+			Q(title__icontains = q)|
+			Q(body__icontains = q)
 			).distinct()
 		for post in posts:
 			queryset.append(post)
@@ -79,21 +78,25 @@ def get_blog_queryset(query=None):
 	return list(set(queryset)) 
 
 def blog_like(request, pk):
-	blog_post = get_object_or_404(BlogPost, pk=pk)
-	blog_post.likes.add(request.user)
-	return JsonResponse({'likes':blog_post.likes.count()})
+	if request.method == "POST":
+		instance = get_object_or_404(BlogPost, pk=pk)
+		if not instance.likes.filter(id=request.user.id).exists():
+			instance.likes.add(request.user)
+			instance.save()
+			return render(request, 'blog/snippets/blog_like.html', context={'blog_post':instance})
+		else:
+			instance.likes.remove(request.user)
+			instance.save() 
+			return render(request, 'blog/snippets/blog_like.html', context={'blog_post':instance})
+	else:
+		return redirect("users:must_authenticate")
 
-def blog_dislike(request, pk):
-	blog_post = get_object_or_404(BlogPost, pk=pk)
-	blog_post.likes.remove(request.user)
-	return HttpResponseRedirect(reverse('blog:detail', args=(blog_post.slug,)))
-
-def create_comment(request, slug):
+def create_comment(request, blog_id):
 	context = {}
 
 	if not request.user.is_authenticated:
 		return redirect('users:must_authenticate')
-	blog_post = get_object_or_404(BlogPost, slug=slug)
+	blog_post = get_object_or_404(BlogPost, pk=blog_id)
 	form = CommentForm(request.POST or None)
 	if form.is_valid():
 		obj = form.save(commit=False)
@@ -103,11 +106,14 @@ def create_comment(request, slug):
 		context["success_message"] = "Comment Created"
 		form = CommentForm()
 	context['form'] = form
-	return render(request, 'blog/create_comment.html', context)
+	context['blog_post'] = blog_post
+	context['blog_id'] = blog_post.pk
+	context['blog_comments'] = blog_post.comment.all()
+	return render(request, 'blog/detail_blog.html', context)
 
 @login_required
-def delete_comment(request, blog_id):
-    blog_post = get_object_or_404(BlogPost, pk=blog_id)
-    comment = get_object_or_404(Comment, author=request.user, blogpost=blog_post)
-    comment.delete()
+def delete_comment(request, com_id):
+    commentz = Comment.objects.get(id=com_id)
+    blog_post = get_object_or_404(BlogPost, pk=commentz.blogpost.id)
+    commentz.delete()
     return redirect('blog:detail', slug=blog_post.slug)

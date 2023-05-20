@@ -8,6 +8,56 @@
     .container{
         padding: 20px;
     }
+    #postee{
+        float: right;
+        margin-top: 10px;
+        margin-left: 10px;
+        width: 100px;
+        height: auto;
+    }
+    #commentos{
+        margin-top: 20px;
+    }
+    .splice{
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: start;
+    }
+    #buttom{
+        margin: 0px 0px 10px 10px;
+
+    }
+    .comment-text, .reply-section{
+        display: inline-block;
+        margin-bottom: 10px;
+        font-family:'Courier New', Courier, monospace;
+    }
+    .commented-section{
+        position: relative;
+        background-color: rgb(229, 241, 237);
+        padding-top: 8px;
+        padding-left: 10px;
+        border-radius: 20px;
+    }
+    #likeez{
+        margin-right: 10px;
+    }
+    .commentz{
+        font-size: large;
+        padding-bottom: 5px;
+    }
+    .form-group{
+        margin-top: 5px;
+    }
+    a:link,
+    a:visited,
+    a:hover,
+    a:active {
+      text-decoration: none;
+    }
+    #comment-form{
+        display: inline-flex;
+    }
 </style>
 
 <div class="container">
@@ -15,53 +65,74 @@
 
         <!-- Blog Post -->
         <div class="card m-auto">
-        <img class="card-img-top" src="{{ blog_post.image.url }}" alt="Blog image Unavailable">
+        <img class="card-img-top" src="{{ blog_post.image.url }}" alt="Blog Image Unavailable">
         <div class="card-body my-2">
             <h2 class="card-title">{{ blog_post.title }}</h2>
                 <p class="card-text">{{ blog_post.body|safe}}</p>
-                    <p class="small">Like(s): {{ blog_post.likes.count }}</p>
+                    <div class="splice">
                         {% if blog_post.author == request.user %}
-                            <a href="{% url 'blog:edit' blog_post.slug %}" class="btn btn-primary">Update</a>
+                            <a href="{% url 'blog:edit' blog_post.slug %}" class="btn btn-primary" id="buttom">Update</a>
                         {% endif %}
                         {% if request.user.is_authenticated %}
-                            {% if request.user in blog_post.likes.all %}
-                                <a href="{% url 'blog:dislike' blog_post.id %}" class="btn btn-success btn-sm">Liked</a>
-                            {% else %}
-                            <button class="btn btn-sm" id="like-button" data-post-id="{{ blog_post.id }}">Like</button>
-                            {% endif %}
+                        <div class="like">
+                           {% include 'blog/snippets/blog_like.html' %}
+                        </div>
                         {% else %}
                         <p><a href="{% url 'users:registration_view' %}">Log in</a> to like or comment</p>
                     {% endif %}
-            <p class="strong">Comments: </p>
-                {% if not blog_post %}
-                    <p>No Comment. . . . .  <a href="{% url 'blog:create_comment' blog_post.slug %}">Add one</a></p>
+                    </div>
+                {% if not blog_comments %}
+                <div id="commentos">
+                    <form id="comment-form" method="post" action="" enctype="multipart/form-data">
+                      {% csrf_token %}  
+                        <!-- Body -->
+                        <div class="form-group">
+                            <input name="body" class="form-control" placeholder="Comment..." required >
+                        </div>
+                        <button id="postee" class="submit btn btn-sm btn-primary btn-block" type="submit">Post</button>
+                    </form>
+                  </div>
                 {% else %}
                     {% for coms in blog_comments%}
-                        <p><strong>By {{ coms.author.username }} On {{ coms.created_at}}</strong></p>
-                        <p>{{ coms.body }}</p>
-                    {% if coms.author == request.user %} <p><a href="{% url 'blog:delete_comment' blog_post.slug %}">Delete</a></p> {% endif %}
+                    <div class="commented-section mt-2">
+                        <div class="d-flex flex-row align-items-center commented-user">
+                            <h5 class="mr-2"><strong>{{ coms.author.username }}</strong>: {{coms.whenpublished}} </h5>
+                        </div>
+                        <div class="comment-text"><span>{{ coms.body }}</span></div>
+                        <div class="reply-section">
+                            <div class="d-flex flex-row align-items-center deleting"><span class="dot ml-2"></span>
+                                <h6 class="ml-2 mt-1">{% if coms.author == request.user %}<a href="{% url 'blog:delete_comment' coms.pk %}">Delete</a> {% endif %}</h6>
+                            </div>
+                        </div>
+                    </div>
                 {% endfor %}
-                <p><a href="{% url 'blog:create_comment' blog_post.slug %}" class="btn btn-primary">Comment</a></p>
-            {%endif%}
+                <div id="commentos">
+                    <form id="comment-form" method="post" action="" enctype="multipart/form-data">
+                      {% csrf_token %}  
+                        <!-- Body -->
+                        <div class="form-group">
+                            <input name="body" class="form-control" placeholder="Comment..." required >
+                        </div>
+                        <button id="postee" class="submit btn btn-sm btn-primary btn-block" type="submit">Post</button>
+                    </form>
+                  </div>
+            {% endif %}
         </div>
         <br>
         <div class="card-footer text-muted">
-            Updated on {{ blog_post.date_updated }} by {{ blog_post.author.username }}
+            Updated {{ blog_post.whenpublished }} by <a href="{#% url 'users:profile_view' blog_post.author.username %#}" >{{ blog_post.author.username }}</a>
         </div>
         </div>
     </div>
 </div>
 
+<script src="https://unpkg.com/htmx.org@1.8.5"></script>
 <script>
-    const likeButton = document.getElementById("like-button");
-    likeButton.addEventListener("click", () => {
-        const postId = likeButton.getAttribute("data-post-id");
-        fetch(`/blog/like/${postId}`)
-            .then(response => response.json())
-            .then(data => {
-                likeButton.innerHTML = `Like ${data.likes}`;
-            });
-    });
-</script>
+    document.body.addEventListener('htmx:configRequest', (e) => {
+      e.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+      })
+  </script>
+
+{% include 'blog/snippets/commentors.html' %}
 
 {% endblock content %}
