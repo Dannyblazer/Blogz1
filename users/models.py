@@ -3,8 +3,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from django.db.models.signals import post_save
+from django.core.files.storage import FileSystemStorage
 from django.dispatch import receiver
+from friend.models import FriendList
 from rest_framework.authtoken.models import Token
+import os
 
 
 class MyAccountManager(BaseUserManager):
@@ -35,17 +38,27 @@ class MyAccountManager(BaseUserManager):
 		user.save(using=self._db)
 		return user
 
+def get_profile_image_filepath(self, filename):
+	return 'profile_images/' + str(self.pk) + '/profile_image.png'
+
+def get_default_profile_image():
+	return 'account/nnajidanny004@gmail.com/20221119_205632.jpg'
 
 class Account(AbstractBaseUser):
 	email 					= models.EmailField(verbose_name="email", max_length=60, unique=True)
 	username 				= models.CharField(max_length=30, unique=True)
+	first_name				= models.CharField(max_length=30, null=True, blank=True)
+	last_name 				= models.CharField(max_length=30, null=True, blank=True)
+	bio 					= models.CharField(max_length=250, null=True, blank=True)
+	role 					= models.CharField(max_length=30, null=True, blank=True)
 	date_joined				= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
 	last_login				= models.DateTimeField(verbose_name='last login', auto_now=True)
 	is_admin				= models.BooleanField(default=False)
 	is_active				= models.BooleanField(default=True)
 	is_staff				= models.BooleanField(default=False)
 	is_superuser			= models.BooleanField(default=False)
-	# first_name 				= models.CharField(max_length=30)
+	profile_image			= models.ImageField(max_length=255, upload_to=get_profile_image_filepath, null=True, blank=True, default=get_default_profile_image)
+	hide_email				= models.BooleanField(default=True)
 
 	USERNAME_FIELD = 'email'
 	REQUIRED_FIELDS = ['username',]
@@ -54,6 +67,9 @@ class Account(AbstractBaseUser):
 
 	def __str__(self):
 		return self.email
+	
+	def get_profile_image_filename(self):
+		return str(self.profile_image)[str(self.profile_image).index('profile_images/' + str(self.pk) + "/"):]
 
 	def has_perm(self, perm, obj=None):
 		return self.is_admin
@@ -78,20 +94,23 @@ class Server(models.Model):
 
 def upload_location(instance, filename):
     file_path = 'account/{profile_id}/{filename}'.format(
-        profile_id=str(instance.account), filename=filename
+        profile_id=str(instance.user), filename=filename
     )
     return file_path
 
-class Profile(models.Model):
-	account = models.OneToOneField(Account, on_delete=models.CASCADE)
-	follower = models.ForeignKey(Account, related_name="owner", on_delete=models.CASCADE)
-	image = models.ImageField(upload_to=upload_location, null=True, blank=True)
-	date_of_birth = models.DateField()
-	first_name = models.CharField(max_length=30)
-	last_name = models.CharField(max_length=30)
-	Bio = models.CharField(max_length=250)
+@receiver(post_save, sender=Account)
+def user_save(sender, instance, **kwargs):
+    FriendList.objects.get_or_create(user=instance)
+		
+'''@receiver(post_save, sender=Account)
+def create_profile(sender, instance, created, **kwargs):
+	if created:
+		user_profile = Profile(user=instance)
+		user_profile.save()
+		user_profile.follows.add(instance.profile)
+		user_profile.save()
 
-
-	def __str__(self):
-		return str(self.first_name + " " + self.last_name)
+'''
+# create a profile for each new user.
+#post_save.connect(create_profile, sender=Account)
 

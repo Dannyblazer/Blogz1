@@ -1,14 +1,36 @@
 <style type="text/css">
 	.card{
 		max-width: 700px;
+		box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+		border-radius: 20px;
 	}
 	.card-body{
 		padding: 20px;
 		width: 100%;
+		background-color: rgb(229, 241, 237);
+	}
+	.card-text{
+		background-color: rgb(206, 202, 196);
+		padding: 10px;
+		border-radius: 20px 10px;
+	}
+	.card-title{
+		text-shadow: 0 0 3px #FF0000;
+	}
+	a:link,
+    a:visited,
+    a:hover,
+    a:active {
+      text-decoration: none;
+    }
+	.card-img-top{
+		margin-top: 12px;
+		border-radius: 20px 20px 0px 0px;
+
 	}
 </style>
 {% if blog_post %}
-<div class="container">
+<div class="container mainee">
 	<div class="row">
 
 		<!-- Blog Post -->
@@ -22,20 +44,21 @@
 					<h2 class="card-title">{{blog_post.title}}</h2>
 				</a>
 				<p class="card-text">{{blog_post.body|truncatechars:250}}</p>
-				<p class="small">like(s): {{ blog_post.likes.count }}</p>
+				<span><i class="fa fa-thumbs-up"></i> <span style="display:inline-block" class="w3-badge w3-green">{{ blog_post.likes.count }}</span></span>
+				<span>&emsp; <i class="fa fa-comments"></i><span style="display:inline-block" class="w3-badge w3-blue">{{ blog_post.comment.count }}</span></span>
 				{% if blog_post.author == request.user %}
 					<a href="{% url 'blog:edit' blog_post.slug %}" class="btn btn-primary">Update</a>
 				{% endif %}
 				
 			</div>
 			<div class="card-footer text-muted">
-			  Updated on {{ blog_post.date_updated }} by {{ blog_post.author.username }}
+			  Updated {{blog_post.whenpublished}} by <a href="{% url 'users:profile_view' blog_post.author.username %}" >{{blog_post.author.username}}</a>
 			</div>
 		</div>
 	</div>
 </div>
 {% else %}
-<div class="container">
+<div class="container mainee">
 	<div class="row">
 		<div class="card m-auto">
 			<div class="card-body mt-2 mb-2">
@@ -47,4 +70,6 @@
 		</div>
 	</div>
 </div>
+
+
 {% endif %}
