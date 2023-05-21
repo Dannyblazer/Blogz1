@@ -40,7 +40,6 @@ def detail_blog_view(request, slug):
 
 
 def edit_blog_view(request, slug):
-
     user = request.user
     if not user.is_authenticated:
         return redirect('must_authenticate')
@@ -117,3 +116,4 @@ def delete_comment(request, com_id):
     blog_post = get_object_or_404(BlogPost, pk=commentz.blogpost.id)
     commentz.delete()
     return redirect('blog:detail', slug=blog_post.slug)
+

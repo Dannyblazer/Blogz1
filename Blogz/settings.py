@@ -26,11 +26,8 @@ SECRET_KEY = 'django-insecure-1iymg#b-c^ykt*j*uez5y@yps#9h^mj1%d%)1*b7-0iciuu+83
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-<<<<<<< HEAD
 ALLOWED_HOSTS = ["*"]
-=======
 ALLOWED_HOSTS = ["196.222.101.23", "127.0.0.1"]
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
 
 if DEBUG:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' # During development only
@@ -45,13 +42,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-<<<<<<< HEAD
     'django.contrib.humanize',
     'django_htmx',
-
-=======
     'channels',
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
     #'allauth',
 
     #'allauth.account',
@@ -108,6 +101,7 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.Account'
+
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.AllowAllUsersModelBackend',
     'users.backends.CaseInsensitiveModelBackend'
@@ -170,31 +164,14 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-<<<<<<< HEAD
 
-STATICFILES_DIRS = [
-=======
 STATICFILES_DIR = [
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
     os.path.join(BASE_DIR, 'static'),
     os.path.join(BASE_DIR, 'media'),
 ]
 
-<<<<<<< HEAD
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-
-
-if not DEBUG:
-    # Tell Django to copy statics to the `staticfiles` directory
-    # in your application directory on Render.
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
-
-    # Turn on WhiteNoise storage backend that takes care of compressing static files
-    # and creating unique names for each version so they can safely be cached forever.
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
-    MEDIA_ROOT = str(os.path.join(BASE_DIR, 'media_cdn'))
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -204,8 +181,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TEMP = os.path.join(BASE_DIR, 'media_cdn/temp')
-=======
-STATIC_URL = 'static/'
+
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_cdn')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
@@ -213,4 +190,4 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media_cdn')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
+

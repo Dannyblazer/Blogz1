@@ -24,10 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('users.urls')),
     path('blog/', include('blog.urls')),
-<<<<<<< HEAD
     path("friend/", include('friend.urls')),
-=======
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
     path('news/', include('personal.urls')),
 
     # REST FRAMEWORK URLS
