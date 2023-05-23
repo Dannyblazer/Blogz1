@@ -21,7 +21,7 @@
             </div>
             <button>Log in</button>
             <div class="register">
-              <p>Don't have an account? <a href="#">Register</a></p>
+              <p>Don't have an account? <a href="{% url 'users:registration_view' %}">Register</a></p>
             </div>
             <div class="forgot">
               <label for=""><a class="m-auto" href="{% url 'password_reset' %}">Forgot Password?</a></label>

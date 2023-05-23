@@ -1,5 +1,5 @@
-from django.shortcuts import render, redirect
-from blog.models import BlogPost
+from django.shortcuts import render
+from django.conf import settings
 from operator import attrgetter
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from blog.views import get_blog_queryset
@@ -62,6 +62,5 @@ def news_articles(request):
         blog_posts = blog_posts_paginator.page(blog_posts_paginator.num_pages)
     
     return render(request, 'snippets/news_articles.html', {'blog_posts' : articles})
-
 
 

@@ -40,12 +40,16 @@ def detail_blog_view(request, slug):
 
 
 def edit_blog_view(request, slug):
+
     user = request.user
     if not user.is_authenticated:
         return redirect('must_authenticate')
+    
     blog_post = get_object_or_404(BlogPost, slug=slug)
+    
     if user != blog_post.author:
         return HttpResponse("You are not the author of this Post!")
+    
     if request.POST:
         form = UpdateBlogPostForm(request.POST or None, request.FILES or None, instance=blog_post)
         if form.is_valid():
@@ -60,7 +64,7 @@ def edit_blog_view(request, slug):
 					"image": blog_post.image,
 				}
 			)
-    return render(request, 'blog/edit_blog.html', context={"success_message": "Updated", "form": form})
+    return render(request, 'blog/edit_blog.html', context={"form": form})
 
 def get_blog_queryset(query=None):
 	queryset = []
@@ -116,4 +120,3 @@ def delete_comment(request, com_id):
     blog_post = get_object_or_404(BlogPost, pk=commentz.blogpost.id)
     commentz.delete()
     return redirect('blog:detail', slug=blog_post.slug)
-

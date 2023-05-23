@@ -18,7 +18,7 @@ class FriendList(models.Model):
         """ Add a new friend """
         if not account in self.friends.all():
             self.friends.add(account)
-
+            
     
     def remove_friend(self, account):
         """ Remove a friend """
@@ -35,8 +35,12 @@ class FriendList(models.Model):
         friends_list = FriendList.objects.get(user=removee)
         friends_list.remove_friend(remover_friends_list.user)
 
-
+        
     @property
+    def get_cname(self):
+        """ For determining what kind of object is associated with a notification"""
+        return "FriendList"
+    
     def is_mutual_friend(self, friend):
         """ Is this a friend """
         if friend in self.friends.all():
@@ -58,13 +62,13 @@ class FriendRequest(models.Model):
             update both the sender and receiver friend list """
         receiver_friend_list = FriendList.objects.get(user=self.receiver)
         if receiver_friend_list:
+
             receiver_friend_list.add_friend(self.sender)
             sender_friend_list = FriendList.objects.get(user=self.sender)
             if sender_friend_list:
                 sender_friend_list.add_friend(self.receiver)
                 self.is_active = False
                 self.save()
-
 
     def decline(self):
         """ Decline a friend request: It is "declined" by setting 'is_active' field to False """
@@ -76,3 +80,7 @@ class FriendRequest(models.Model):
         self.is_active = False
         self.save()
 
+    @property
+    def get_cname(self):
+        """ For determining what kind of object is associated with a notification"""
+        return "FriendRequest"

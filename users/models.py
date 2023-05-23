@@ -3,11 +3,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.conf import settings
 from django.db.models.signals import post_save
-from django.core.files.storage import FileSystemStorage
 from django.dispatch import receiver
 from friend.models import FriendList
 from rest_framework.authtoken.models import Token
-import os
 
 
 class MyAccountManager(BaseUserManager):

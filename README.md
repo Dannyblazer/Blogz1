@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # social-media-blog
 An advanced Social Media Blog app with Django
 
@@ -50,9 +49,4 @@ Overall, this advanced social media blog with Django provides a robust platform 
 
 ![Account Edit Page](site-images/Edit_acc.png)
 
-![Public Chat Page](/site-images/public.png)
-=======
-# Blogz1
-An extended blog application from the codingwithMitch Chat and Blog app.
-Will be hosted soon.
->>>>>>> f8e9cabd2a6e26705433f3807b1e00e632b64474
+![Public Chat Page](/site-images/Public_chat.png)
