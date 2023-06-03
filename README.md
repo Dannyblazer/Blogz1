@@ -15,11 +15,7 @@ This social media blog app with Django has the following features:
 
 - friends system: Users can become friends with other users and receive updates on their activity.
 
-- Chat_messaging system: Users can chat with their friends
-
 - Rest Api support: An awesome django-rest api backend to support mobile applications.
-
-- Notifications: Users receive notifications when their blog posts receive comments or when they are mentioned in other posts.(still in development)
 
 - Admin Controls: Admins have the ability to manage users, moderate comments, and perform other administrative tasks.
 
